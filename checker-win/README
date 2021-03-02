@@ -1,0 +1,59 @@
+============================= BUTARU OANA, 336CA ===============================
+================================== TEMA 2 SO ===================================
+
+============================== ORGANIZAREA TEMEI ===============================
+
+Tema este organizata in doua fisiere:
+- so_stdio.c, in care se regaseste implementarea propriu-zisa a functiilor
+- so_stdio.h, din scheletul temei
+
+Fisierul so_stdio.c contine implementarea functiilor de biblioteca pentru
+lucrul cu fisiere. Pentru reprezentarea fisierului, am folosit o structura,
+SO_FILE, ce cuprinde urmatoarele campuri: buffer-ul asociat, intrucat se
+lucreaza cu operatii buffered, file descriptor-ul, cursorul din fisier,
+"cursorul" din buffer, numarul de caractere ramase in buffer, si 3 flag-uri
+care indica daca ultima operatie asupra fisierului a fost de scriere (1) sau
+de citire (0), daca fisierul contine erori (1) sau nu (0) si daca s-a ajuns
+la finalul fisierului (1) sau nu (0).
+
+Consider ca tema a fost utila pentru aprofundarea cunostinelor despre apelurile
+de sistem, despre functii de biblioteca si despre ce inseamna operatii buffered.
+
+================================= IMPLEMENTARE =================================
+
+so_fopen - se apeleaza CreateFile cu parametri necesari pentru fiecare caz;
+se verifica daca apar erori la apelul CreateFile
+
+so_fclose - se verifica daca ultima operatie asupra fisierului a fost de scriere,
+caz in care se transpune informatia din buffer in fisier; se inchide fisierul
+folosind CloseHandle pe handle-ul asociat fisierului
+
+so_fileno - intoarce file descriptor-ul, adica un handle
+
+so_fflush - se scrie informatia din buffer in fisier si se reseteaza pointer-ul
+din interiorul buffer-ului la 0
+
+so_fseek - se apeleaza SetFilePointer cu parametri corespunzatori, iar daca ultima
+operatie a fost de scriere, se apeleaza so_fflush()
+
+so_ftell - intoarce pozitia cursorului
+
+so_fgetc si so_fread - in so_fgetc se apeleaza ReadFile, iar pentru eficienta,
+citim de la inceput BUFFSIZE caractere, pe care le pastram in buffer. Astfel,
+se reduce numarul de apeluri de sistem, intrucat se face un astfel de apel
+doar cand se termina de citit caracterele stocate in buffer.
+
+so_fputc si so_fwrite - se trimit caracterele din buffer in fisier in momentul
+in care buffer-ul a fost umplut
+
+so_feof si so_ferror - folosind flag-urile din structura, setez cand s-a 
+ajuns la finalul fisierul sau cand s-a intampinat o eroare si la final returnez
+aceste flag-uri.
+
+============================= COMPILARE SI RULARE ==============================
+
+Windows: nmake build compileaza biblioteca dinamica libso_stdio.dll
+	     nmake clean: sterge fisierele binare rezultate in urma compilarii
+
+Tema este disponibila si pe platforma Gitlab:
+https://gitlab.cs.pub.ro/oana_andreea.butaru/l3-so-assignments.git
